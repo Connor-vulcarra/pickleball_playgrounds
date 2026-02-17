@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 
