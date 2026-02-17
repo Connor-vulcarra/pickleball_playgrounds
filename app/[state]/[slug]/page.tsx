@@ -1,7 +1,7 @@
-export const dynamic = 'force-static'
-
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
+
+export const dynamic = 'force-static'
 
 interface Court {
   id: string
@@ -10,6 +10,7 @@ interface Court {
   address: string
   city: string
   state: string
+  state_slug: string
   lat: number
   lng: number
   indoor_outdoor: string
@@ -19,41 +20,48 @@ interface Court {
   image_url: string
   lighting: boolean
   featured: boolean
+  status: string
 }
 
 export async function generateStaticParams() {
   const { data: courts } = await supabase
     .from('courts')
-    .select('slug')
-    .eq('state_slug', 'utah')
+    .select('state_slug, slug')
+    .eq('status', 'published')
 
-  return courts?.map((court) => ({ slug: court.slug })) ?? []
+  return courts?.map((court) => ({ 
+    state: court.state_slug,
+    slug: court.slug 
+  })) ?? []
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ state: string; slug: string }> }) {
   const { slug } = await params
 
   const { data: court } = await supabase
     .from('courts')
-    .select('name, city, description')
+    .select('name, city, state, description')
     .eq('slug', slug)
+    .eq('status', 'published')
     .single()
 
   if (!court) return {}
 
   return {
-    title: `${court.name} | Pickleball Courts in ${court.city}, Utah`,
-    description: `Find details about ${court.name} in ${court.city}, Utah. Court info, location, and more.`,
+    title: `${court.name} | Pickleball Courts in ${court.city}, ${court.state}`,
+    description: `Find details about ${court.name} in ${court.city}, ${court.state}. Court info, location, and more.`,
   }
 }
 
-export default async function CourtPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+export default async function CourtPage({ params }: { params: Promise<{ state: string; slug: string }> }) {
+  const { state, slug } = await params
 
   const { data: court } = await supabase
     .from('courts')
     .select('*')
     .eq('slug', slug)
+    .eq('state_slug', state)
+    .eq('status', 'published')
     .single()
 
   if (!court) notFound()
@@ -124,8 +132,8 @@ export default async function CourtPage({ params }: { params: Promise<{ slug: st
         </div>
       )}
 
-      <a href="/utah" className="text-blue-600 hover:underline text-sm">
-        Back to all Utah courts
+      <a href={`/${state}`} className="text-blue-600 hover:underline text-sm">
+        Back to all {court.state} courts
       </a>
 
     </main>
