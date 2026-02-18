@@ -1,35 +1,68 @@
-export const dynamic = 'force-static'
-
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 
-export const metadata = {
-  title: 'Pickleball Courts in Utah | Pickleball Playgrounds',
-  description: 'Find pickleball courts across Utah. Browse free and paid indoor and outdoor courts by city.',
+export async function generateStaticParams() {
+  const { data: states } = await supabase
+    .from('courts')
+    .select('state_slug')
+    .eq('status', 'published')
+
+  const uniqueStates = [...new Set(states?.map(s => s.state_slug) || [])]
+  
+  return uniqueStates.map(state => ({ state }))
 }
 
-export default async function UtahPage() {
+export async function generateMetadata({ params }: { params: Promise<{ state: string }> }) {
+  const { state } = await params
+
+  const { data: courts } = await supabase
+    .from('courts')
+    .select('state')
+    .eq('state_slug', state)
+    .eq('status', 'published')
+    .limit(1)
+    .single()
+
+  if (!courts) return {}
+
+  const stateName = courts.state
+
+  return {
+    title: `Pickleball Courts in ${stateName} | Pickleball Playgrounds`,
+    description: `Find pickleball courts across ${stateName}. Browse free and paid indoor and outdoor courts by city.`,
+  }
+}
+
+export default async function StatePage({ params }: { params: Promise<{ state: string }> }) {
+  const { state } = await params
+
   const { data: courts } = await supabase
     .from('courts')
     .select('*')
-    .eq('state_slug', 'utah')
+    .eq('state_slug', state)
+    .eq('status', 'published')
     .order('city', { ascending: true })
+
+  if (!courts || courts.length === 0) notFound()
+
+  const stateName = courts[0]?.state || state
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
 
       <h1 className="text-4xl font-bold text-gray-900 mb-2">
-        Pickleball Courts in Utah
+        Pickleball Courts in {stateName}
       </h1>
       <p className="text-gray-500 mb-8">
-        Browse {courts?.length ?? 0} pickleball courts across Utah. Filter by city, indoor/outdoor, and free or paid.
+        Browse {courts.length} pickleball courts across {stateName}. Filter by city, indoor/outdoor, and free or paid.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courts?.map((court) => (
+        {courts.map((court) => (
           <Link
             key={court.id}
-            href={`/utah/${court.slug}`}
+            href={`/${state}/${court.slug}`}
             className="block border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
           >
             {court.image_url ? (
