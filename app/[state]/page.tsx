@@ -63,7 +63,7 @@ export default async function StatePage({ params }: { params: Promise<{ state: s
           <Link
             key={court.id}
             href={`/${state}/${court.slug}`}
-            className="block border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:border-green-400 hover:shadow-green-900/30"
+            className="block border-2 border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:border-green-400 hover:shadow-green-900/30"
           >
             {court.image_url ? (
               <img

@@ -80,9 +80,9 @@ export default async function CourtPage({ params }: { params: Promise<{ state: s
         />
       )}
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">{court.name}</h1>
+      <h1 className="text-3xl font-bold text-white mb-2">{court.name}</h1>
 
-      <p className="text-gray-500 mb-4">{court.city}, {court.state}</p>
+      <p className="text-gray-400 mb-4">{court.city}, {court.state}</p>
 
       <div className="flex flex-wrap gap-2 mb-6">
         {court.indoor_outdoor && (
@@ -100,7 +100,7 @@ export default async function CourtPage({ params }: { params: Promise<{ state: s
           </span>
         )}
         {court.num_courts && (
-          <span className="bg-gray-100 text-gray-800 text-sm font-medium px-3 py-1 rounded-full">
+          <span className="bg-gray-700 text-gray-200 text-sm font-medium px-3 py-1 rounded-full">
             {court.num_courts} {court.num_courts === 1 ? 'Court' : 'Courts'}
           </span>
         )}
@@ -113,13 +113,13 @@ export default async function CourtPage({ params }: { params: Promise<{ state: s
 
       {court.address && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">Address</h2>
-          <p className="text-gray-600">{court.address}</p>
+          <h2 className="text-lg font-semibold text-white mb-1">Address</h2>
+          <p className="text-gray-400">{court.address}</p>
           <a
             href={googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-2 text-blue-600 hover:underline text-sm"
+            className="inline-block mt-2 text-green-400 hover:underline text-sm"
           >
             Get Directions
           </a>
@@ -128,12 +128,12 @@ export default async function CourtPage({ params }: { params: Promise<{ state: s
 
       {court.description && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">About</h2>
-          <p className="text-gray-600 leading-relaxed">{court.description}</p>
+          <h2 className="text-lg font-semibold text-white mb-1">About</h2>
+          <p className="text-gray-400 leading-relaxed">{court.description}</p>
         </div>
       )}
 
-      <a href={`/${state}`} className="text-blue-600 hover:underline text-sm">
+      <a href={`/${state}`} className="text-green-400 hover:underline text-sm">
         Back to all {court.state} courts
       </a>
 
