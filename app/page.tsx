@@ -11,7 +11,7 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-white mb-2 text-center">
         Pickleball Playgrounds
       </h1>
-      <p className="text-gray-400 mb-10 text-center">
+      <p className="text-white mb-10 text-center">
         Find pickleball courts across the United States. Browse by state.
       </p>
 
