@@ -43,6 +43,7 @@ export default async function StatePage({ params }: { params: Promise<{ state: s
     .eq('state_slug', state)
     .eq('status', 'published')
     .order('city', { ascending: true })
+    .order('name', { ascending: true})
 
   if (!courts || courts.length === 0) notFound()
 
@@ -50,7 +51,10 @@ export default async function StatePage({ params }: { params: Promise<{ state: s
 
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
-
+      <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white text-sm mb-6 transition-colors duration-200">
+         ← All States
+      </Link>
+      
       <h1 className="text-4xl font-bold text-white mb-2">
         Pickleball Courts in {stateName}
       </h1>
