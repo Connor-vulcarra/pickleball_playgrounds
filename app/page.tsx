@@ -1,11 +1,25 @@
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
-const states = [
-  { name: 'Utah', slug: 'utah', count: 87 },
-  // Add more states here as you expand
-]
+export const revalidate = 3600 // revalidate every hour
 
-export default function Home() {
+export default async function Home() {
+  const { data } = await supabase
+    .from('courts')
+    .select('state, state_slug')
+    .eq('status', 'published')
+
+  // Group by state and count courts
+  const stateMap: Record<string, { name: string; slug: string; count: number }> = {}
+  for (const court of data || []) {
+    if (!stateMap[court.state_slug]) {
+      stateMap[court.state_slug] = { name: court.state, slug: court.state_slug, count: 0 }
+    }
+    stateMap[court.state_slug].count++
+  }
+
+  const states = Object.values(stateMap).sort((a, b) => a.name.localeCompare(b.name))
+
   return (
     <main className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-4xl font-bold text-white mb-2 text-center">
@@ -15,13 +29,13 @@ export default function Home() {
         Find pickleball courts across the United States. Browse by state.
       </p>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center flex-wrap gap-4">
         {states.map((state) => (
           <Link
             key={state.slug}
             href={`/${state.slug}`}
             className="block border-2 border-gray-200 rounded-xl p-6 w-64 transition-all duration-300 hover:scale-[1.03] hover:shadow-xl hover:border-green-400 hover:shadow-green-900/30"
->
+          >
             <h2 className="text-xl font-semibold text-white mb-1 text-center">{state.name}</h2>
             <p className="text-gray-400 text-sm text-center">{state.count} courts</p>
           </Link>
